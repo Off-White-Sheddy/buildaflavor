@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solution Flavor Builder</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .flavor-card {
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .flavor-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-purple-100 to-green-100 min-h-screen flex items-center justify-center p-4">
+  <div class="bg-white shadow-2xl rounded-3xl p-6 sm:p-10 w-full max-w-5xl space-y-8">
+    <h1 class="text-4xl font-extrabold text-center text-green-700 tracking-tight">✨ Build Your Gummy Flavor ✨</h1>
+    <form id="flavorForm" class="space-y-8">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div>
+          <label for="base" class="block text-sm font-medium text-gray-700 mb-1">Choose Your Base</label>
+          <select id="base" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500">
+            <option>Pectin Base</option>
+            <option>Gelatin Base</option>
+            <option>Pectin-Gelatin Blend</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="twist" class="block text-sm font-medium text-gray-700 mb-1">Add a Custom Twist</label>
+          <select id="twist" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500">
+            <option>Lavender 🌸</option>
+            <option>Mint 🌿</option>
+            <option>Chili Extract 🌶️</option>
+            <option>Cola Emulsion 🥤</option>
+            <option>Rose Water 🌹</option>
+            <option>Ube 🍠</option>
+            <option>Cucumber 🥒</option>
+            <option>Vanilla 🍦</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="enhancer" class="block text-sm font-medium text-gray-700 mb-1">Choose an Enhancer</label>
+          <select id="enhancer" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500">
+            <option>Citric Acid 🍋</option>
+            <option>Malic Acid 🍏</option>
+            <option>Tartaric Acid 🍇</option>
+            <option>Monk Fruit 🍈</option>
+            <option>MSG 🧂</option>
+            <option>Spirulina 🌊</option>
+            <option>Turmeric 🟡</option>
+            <option>Beet Powder ❤️</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="flavorName" class="block text-sm font-medium text-gray-700 mb-1">Name Your Flavor</label>
+          <input type="text" id="flavorName" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500" placeholder="Enter your flavor name">
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-3">Choose Up to 3 Primary Flavors</label>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4" id="flavorOptions">
+          ${['🍓 Strawberry','🍉 Watermelon','🍑 Peach','🥭 Mango','🍍 Pineapple','🍋 Lemon','🍇 Grape','🫐 Blueberry','🍒 Cherry','🫐 Mixed Berry','🍹 Pink Lemonade','🍊 Tangerine','❤️ Red Raspberry'].map(f => `
+          <label class="flex flex-col items-center">
+            <input type="checkbox" name="flavors" value="${f}" class="hidden flavor-check">
+            <div class="flavor-card w-full border-2 border-gray-300 rounded-xl p-3 text-center cursor-pointer hover:border-green-500">
+              <div class="text-4xl mb-2">${f.split(' ')[0]}</div>
+              <span class="text-sm font-medium">${f.split(' ').slice(1).join(' ')}</span>
+            </div>
+          </label>`).join('')}
+        </div>
+      </div>
+
+      <button type="submit" class="w-full py-3 px-6 bg-green-600 text-white text-lg font-bold rounded-lg shadow hover:bg-green-700 transition">Create My Flavor</button>
+    </form>
+
+    <div id="output" class="hidden transition-all duration-500 ease-out transform opacity-0 mt-6 bg-green-100 p-6 rounded-xl text-green-900 text-base shadow-inner"></div>
+  </div>
+
+  <script>
+    const flavorCards = document.querySelectorAll(".flavor-card");
+    flavorCards.forEach(card => {
+      card.addEventListener("click", () => {
+        const checkbox = card.parentElement.querySelector(".flavor-check");
+        checkbox.checked = !checkbox.checked;
+        card.classList.toggle("border-green-500", checkbox.checked);
+        card.classList.toggle("bg-green-100", checkbox.checked);
+      });
+    });
+
+    document.getElementById("flavorForm").addEventListener("submit", function(event) {
+      event.preventDefault();
+
+      const base = document.getElementById("base").value;
+      const selectedFlavors = Array.from(document.querySelectorAll("input[name='flavors']:checked")).map(cb => cb.value);
+      const twist = document.getElementById("twist").value;
+      const enhancer = document.getElementById("enhancer").value;
+      const flavorName = document.getElementById("flavorName").value.trim();
+
+      if (selectedFlavors.length > 3) {
+        alert("Please select no more than 3 primary flavors.");
+        return;
+      }
+
+      const output = `
+        <h2 class="text-2xl font-bold mb-3">🎉 Your Custom Flavor</h2>
+        <ul class="list-disc list-inside space-y-2">
+          <li><strong>Name:</strong> ${flavorName || "Unnamed Flavor"}</li>
+          <li><strong>Base:</strong> ${base}</li>
+          <li><strong>Primary Flavors:</strong> ${selectedFlavors.join(", ")}</li>
+          <li><strong>Custom Twist:</strong> ${twist}</li>
+          <li><strong>Enhancer:</strong> ${enhancer}</li>
+        </ul>
+      `;
+
+      const outputDiv = document.getElementById("output");
+      outputDiv.innerHTML = output;
+      outputDiv.classList.remove("hidden", "opacity-0");
+      outputDiv.classList.add("opacity-100");
+    });
+  </script>
+</body>
+</html>
