@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,7 +19,13 @@
 <body class="bg-gradient-to-br from-purple-100 to-green-100 min-h-screen flex items-center justify-center p-4">
   <div class="bg-white shadow-2xl rounded-3xl p-6 sm:p-10 w-full max-w-5xl space-y-8">
     <h1 class="text-4xl font-extrabold text-center text-green-700 tracking-tight">✨ Build Your Gummy Flavor ✨</h1>
-    <form id="flavorForm" class="space-y-8">
+    <form method="post" action="/cart/add" id="flavorForm" class="space-y-8">
+      <input type="hidden" name="id" value="12345678901234">
+      <input type="hidden" name="properties[Flavor Name]" id="hiddenFlavorName">
+      <input type="hidden" name="properties[Base]" id="hiddenBase">
+      <input type="hidden" name="properties[Primary Flavors]" id="hiddenFlavors">
+      <input type="hidden" name="properties[Custom Twist]" id="hiddenTwist">
+      <input type="hidden" name="properties[Enhancer]" id="hiddenEnhancer">
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div>
           <label for="base" class="block text-sm font-medium text-gray-700 mb-1">Choose Your Base</label>
@@ -66,14 +73,6 @@
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-3">Choose Up to 3 Primary Flavors</label>
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-4" id="flavorOptions">
-          ${['🍓 Strawberry','🍉 Watermelon','🍑 Peach','🥭 Mango','🍍 Pineapple','🍋 Lemon','🍇 Grape','🫐 Blueberry','🍒 Cherry','🫐 Mixed Berry','🍹 Pink Lemonade','🍊 Tangerine','❤️ Red Raspberry'].map(f => `
-          <label class="flex flex-col items-center">
-            <input type="checkbox" name="flavors" value="${f}" class="hidden flavor-check">
-            <div class="flavor-card w-full border-2 border-gray-300 rounded-xl p-3 text-center cursor-pointer hover:border-green-500">
-              <div class="text-4xl mb-2">${f.split(' ')[0]}</div>
-              <span class="text-sm font-medium">${f.split(' ').slice(1).join(' ')}</span>
-            </div>
-          </label>`).join('')}
         </div>
       </div>
 
@@ -84,6 +83,17 @@
   </div>
 
   <script>
+    const flavors = ['🍓 Strawberry','🍉 Watermelon','🍑 Peach','🥭 Mango','🍍 Pineapple','🍋 Lemon','🍇 Grape','🫐 Blueberry','🍒 Cherry','🫐 Mixed Berry','🍹 Pink Lemonade','🍊 Tangerine','❤️ Red Raspberry'];
+    const flavorGrid = document.getElementById('flavorOptions');
+    flavorGrid.innerHTML = flavors.map(f => `
+      <label class="flex flex-col items-center">
+        <input type="checkbox" name="flavors" value="${f}" class="hidden flavor-check">
+        <div class="flavor-card w-full border-2 border-gray-300 rounded-xl p-3 text-center cursor-pointer hover:border-green-500">
+          <div class="text-4xl mb-2">${f.split(' ')[0]}</div>
+          <span class="text-sm font-medium">${f.split(' ').slice(1).join(' ')}</span>
+        </div>
+      </label>`).join('');
+
     const flavorCards = document.querySelectorAll(".flavor-card");
     flavorCards.forEach(card => {
       card.addEventListener("click", () => {
@@ -96,7 +106,7 @@
 
     document.getElementById("flavorForm").addEventListener("submit", function(event) {
       event.preventDefault();
-
+      event.preventDefault();
       const base = document.getElementById("base").value;
       const selectedFlavors = Array.from(document.querySelectorAll("input[name='flavors']:checked")).map(cb => cb.value);
       const twist = document.getElementById("twist").value;
@@ -118,11 +128,20 @@
           <li><strong>Enhancer:</strong> ${enhancer}</li>
         </ul>
       `;
-
       const outputDiv = document.getElementById("output");
       outputDiv.innerHTML = output;
       outputDiv.classList.remove("hidden", "opacity-0");
       outputDiv.classList.add("opacity-100");
+
+      // Set Shopify hidden inputs
+      document.getElementById("hiddenFlavorName").value = flavorName || "Unnamed Flavor";
+      document.getElementById("hiddenBase").value = base;
+      document.getElementById("hiddenFlavors").value = selectedFlavors.join(", ");
+      document.getElementById("hiddenTwist").value = twist;
+      document.getElementById("hiddenEnhancer").value = enhancer;
+
+      // Submit the form
+      setTimeout(() => event.target.submit(), 1000);
     });
   </script>
 </body>
